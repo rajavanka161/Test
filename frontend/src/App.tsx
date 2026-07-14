@@ -1,6 +1,6 @@
 import { AppShell } from './components/layout/AppShell';
-import { useTheme } from './hooks/useTheme';
 import { TodoPage } from './pages/TodoPage';
+import { useTheme } from './hooks/useTheme';
 
 export default function App() {
   const { isDark, toggleTheme } = useTheme();
