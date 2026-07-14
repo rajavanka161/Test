@@ -108,7 +108,7 @@ export function TodoPage() {
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-2 rounded-2xl border border-border/70 bg-surface-secondary/70 px-4 py-3 text-sm text-muted-foreground">
                 <Sparkles className="h-4 w-4 text-primary" />
-                Synced with {import.meta.env.VITE_API_BASE_URL ?? 'the same-origin backend proxy'}
+                Synced with the backend todo API
               </div>
               <Button variant="outline" onClick={() => void loadTodos()} disabled={isLoading}>
                 <RefreshCcw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
