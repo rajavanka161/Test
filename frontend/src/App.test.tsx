@@ -5,6 +5,8 @@ type MockTodo = {
   id: number;
   text: string;
   completed: boolean;
+  created_at: string;
+  updated_at: string;
 };
 
 describe('App', () => {
@@ -27,6 +29,8 @@ describe('App', () => {
         id: 1,
         text: 'Existing task',
         completed: false,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
       },
     ];
 
@@ -36,6 +40,8 @@ describe('App', () => {
         id: 2,
         text: 'New task',
         completed: false,
+        created_at: '2024-01-02T00:00:00Z',
+        updated_at: '2024-01-02T00:00:00Z',
       },
     ];
 
@@ -50,6 +56,8 @@ describe('App', () => {
           id: 2,
           text: 'New task',
           completed: false,
+          created_at: '2024-01-02T00:00:00Z',
+          updated_at: '2024-01-02T00:00:00Z',
         }),
       })
       .mockResolvedValueOnce({
