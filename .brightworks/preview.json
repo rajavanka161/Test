@@ -1,0 +1,14 @@
+{
+  "targets": [
+    {
+      "name": "frontend",
+      "root": "frontend/",
+      "type": "react-vite"
+    },
+    {
+      "name": "backend",
+      "root": "backend/",
+      "type": "fastapi"
+    }
+  ]
+}
