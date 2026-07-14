@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field, model_validator
 
 
@@ -28,5 +30,7 @@ class TodoOut(BaseModel):
     id: int
     text: str
     completed: bool
+    created_at: datetime
+    updated_at: datetime
 
     model_config = {"from_attributes": True}

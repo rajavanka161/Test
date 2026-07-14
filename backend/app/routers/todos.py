@@ -8,13 +8,13 @@ from app.schemas.todo import TodoCreate, TodoOut, TodoUpdate
 
 # API CONTRACT
 # GET  /api/todos
-#   response: [{"id": number, "text": string, "completed": boolean}]
+#   response: [{"id": number, "text": string, "completed": boolean, "created_at": string, "updated_at": string}]
 # POST /api/todos
 #   request:  {"text": string}
-#   response: {"id": number, "text": string, "completed": boolean}
+#   response: {"id": number, "text": string, "completed": boolean, "created_at": string, "updated_at": string}
 # PATCH /api/todos/{id}
 #   request:  {"text"?: string, "completed"?: boolean}
-#   response: {"id": number, "text": string, "completed": boolean}
+#   response: {"id": number, "text": string, "completed": boolean, "created_at": string, "updated_at": string}
 # DELETE /api/todos/{id}
 #   response: 204 no body
 
