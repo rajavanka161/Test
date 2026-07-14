@@ -6,6 +6,8 @@ type MockTodo = {
   id: number;
   text: string;
   completed: boolean;
+  created_at: string;
+  updated_at: string;
 };
 
 describe('App', () => {
@@ -22,11 +24,14 @@ describe('App', () => {
   });
 
   it('renders todos from the API and refreshes after creating a new todo', async () => {
+    const now = new Date().toISOString();
     const initialTodos: MockTodo[] = [
       {
         id: 1,
         text: 'Existing task',
         completed: false,
+        created_at: now,
+        updated_at: now,
       },
     ];
 
@@ -36,6 +41,8 @@ describe('App', () => {
         id: 2,
         text: 'New task',
         completed: false,
+        created_at: now,
+        updated_at: now,
       },
     ];
 
@@ -50,6 +57,8 @@ describe('App', () => {
           id: 2,
           text: 'New task',
           completed: false,
+          created_at: now,
+          updated_at: now,
         }),
       })
       .mockResolvedValueOnce({

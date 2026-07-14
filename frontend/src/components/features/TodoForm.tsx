@@ -2,6 +2,7 @@ import { LoaderCircle, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { Label } from '../ui/Label';
 
 interface TodoFormProps {
   onSubmit: (text: string) => Promise<void>;
@@ -25,9 +26,9 @@ export function TodoForm({ onSubmit, isSubmitting }: TodoFormProps) {
   return (
     <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSubmit}>
       <div className="flex-1">
-        <label className="mb-2 block text-sm font-medium text-foreground" htmlFor="todo-text">
+        <Label className="mb-2 block" htmlFor="todo-text">
           Add a new todo
-        </label>
+        </Label>
         <Input
           id="todo-text"
           value={text}

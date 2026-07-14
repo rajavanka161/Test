@@ -2,27 +2,51 @@ export type Todo = {
   id: number;
   text: string;
   completed: boolean;
+  created_at: string;
+  updated_at: string;
 };
 
 export type TodoUpdate = {
-  text: string;
-  completed: boolean;
+  text?: string;
+  completed?: boolean;
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
 
+function buildErrorMessage(path: string, responseText: string, status: number): string {
+  if (responseText.trim()) {
+    return responseText;
+  }
+
+  if (status >= 500) {
+    return `The server returned ${status} while requesting ${path}.`;
+  }
+
+  return `Request to ${path} failed with status ${status}.`;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
-    ...init,
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(init?.headers ?? {}),
+      },
+      ...init,
+    });
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? `Unable to reach the backend at ${API_BASE || 'same-origin /api proxy'}. ${error.message}`
+        : 'Unable to reach the backend. Check the frontend proxy or VITE_API_BASE_URL configuration.',
+    );
+  }
 
   if (!response.ok) {
     const message = await response.text();
-    throw new Error(message || 'Request failed');
+    throw new Error(buildErrorMessage(path, message, response.status));
   }
 
   if (response.status === 204) {

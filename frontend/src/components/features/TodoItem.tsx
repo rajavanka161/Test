@@ -5,6 +5,7 @@ import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Checkbox } from '../ui/Checkbox';
 import { Input } from '../ui/Input';
+import { Label } from '../ui/Label';
 
 interface TodoItemProps {
   todo: Todo;
@@ -34,6 +35,18 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
 
     await onUpdate(todo, trimmed, todo.completed);
     setIsEditing(false);
+  }
+
+  async function handleEditKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      await handleSave();
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      handleCancel();
+    }
   }
 
   function handleCancel() {
@@ -69,13 +82,14 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
           {isEditing ? (
             <div className="space-y-3">
               <div>
-                <label htmlFor={`todo-edit-${todo.id}`} className="mb-2 block text-sm font-medium text-foreground">
+                <Label htmlFor={`todo-edit-${todo.id}`} className="mb-2 block">
                   Edit todo
-                </label>
+                </Label>
                 <Input
                   id={`todo-edit-${todo.id}`}
                   value={draftText}
                   onChange={(event) => setDraftText(event.target.value)}
+                  onKeyDown={(event) => void handleEditKeyDown(event)}
                   disabled={isUpdating || isDeleting}
                   aria-required="true"
                   required
