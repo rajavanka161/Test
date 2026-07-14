@@ -8,10 +8,10 @@ interface TodoListProps {
   todos: Todo[];
   isLoading: boolean;
   error: string | null;
-  pendingToggleId: number | null;
+  pendingUpdateId: number | null;
   pendingDeleteId: number | null;
   onRetry: () => Promise<void>;
-  onToggle: (todo: Todo) => Promise<void>;
+  onUpdate: (todo: Todo, nextText: string, nextCompleted: boolean) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
 }
 
@@ -22,7 +22,7 @@ function TodoSkeleton() {
         <div className="mt-1 h-5 w-5 rounded bg-muted" />
         <div className="flex-1 space-y-3">
           <div className="h-4 w-2/3 rounded bg-muted" />
-          <div className="h-3 w-1/3 rounded bg-muted" />
+          <div className="h-10 w-full rounded bg-muted" />
         </div>
       </div>
     </div>
@@ -33,10 +33,10 @@ export function TodoList({
   todos,
   isLoading,
   error,
-  pendingToggleId,
+  pendingUpdateId,
   pendingDeleteId,
   onRetry,
-  onToggle,
+  onUpdate,
   onDelete,
 }: TodoListProps) {
   if (isLoading) {
@@ -94,9 +94,9 @@ export function TodoList({
             <TodoItem
               key={todo.id}
               todo={todo}
-              isToggling={pendingToggleId === todo.id}
+              isUpdating={pendingUpdateId === todo.id}
               isDeleting={pendingDeleteId === todo.id}
-              onToggle={onToggle}
+              onUpdate={onUpdate}
               onDelete={onDelete}
             />
           ))}

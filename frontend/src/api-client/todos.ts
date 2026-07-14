@@ -2,7 +2,11 @@ export type Todo = {
   id: number;
   text: string;
   completed: boolean;
-  created_at: string;
+};
+
+export type TodoUpdate = {
+  text: string;
+  completed: boolean;
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
@@ -21,6 +25,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(message || 'Request failed');
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return (await response.json()) as T;
 }
 
@@ -35,15 +43,15 @@ export function createTodo(text: string): Promise<Todo> {
   });
 }
 
-export function updateTodoCompletion(id: number, completed: boolean): Promise<Todo> {
+export function updateTodo(id: number, payload: TodoUpdate): Promise<Todo> {
   return request<Todo>(`/api/todos/${id}`, {
     method: 'PATCH',
-    body: JSON.stringify({ completed }),
+    body: JSON.stringify(payload),
   });
 }
 
-export function deleteTodo(id: number): Promise<{ ok: boolean }> {
-  return request<{ ok: boolean }>(`/api/todos/${id}`, {
+export function deleteTodo(id: number): Promise<void> {
+  return request<void>(`/api/todos/${id}`, {
     method: 'DELETE',
   });
 }

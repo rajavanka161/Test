@@ -6,7 +6,6 @@ type MockTodo = {
   id: number;
   text: string;
   completed: boolean;
-  created_at: string;
 };
 
 describe('App', () => {
@@ -22,22 +21,23 @@ describe('App', () => {
     vi.unstubAllGlobals();
   });
 
-  it('renders todos from the API and creates a new todo', async () => {
+  it('renders todos from the API and refreshes after creating a new todo', async () => {
     const initialTodos: MockTodo[] = [
       {
         id: 1,
         text: 'Existing task',
         completed: false,
-        created_at: '2024-01-01T10:00:00Z',
       },
     ];
 
-    const createdTodo: MockTodo = {
-      id: 2,
-      text: 'New task',
-      completed: false,
-      created_at: '2024-01-02T10:00:00Z',
-    };
+    const refreshedTodos: MockTodo[] = [
+      ...initialTodos,
+      {
+        id: 2,
+        text: 'New task',
+        completed: false,
+      },
+    ];
 
     fetchMock
       .mockResolvedValueOnce({
@@ -46,7 +46,15 @@ describe('App', () => {
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => createdTodo,
+        json: async () => ({
+          id: 2,
+          text: 'New task',
+          completed: false,
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => refreshedTodos,
       });
 
     render(<App />);
