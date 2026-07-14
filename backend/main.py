@@ -24,6 +24,3 @@ app.add_middleware(
 app.include_router(todos.router)
 
 
-@app.get("/health")
-async def health() -> dict[str, bool]:
-    return {"ok": True}
