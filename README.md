@@ -1,3 +1,0 @@
-# Test
-
-Initialized by BrightWorks.
