@@ -1,0 +1,57 @@
+{
+  "status": "completed",
+  "framework": "react",
+  "entrypoint": {
+    "index_html": "frontend/index.html",
+    "main_tsx": "frontend/src/main.tsx",
+    "app_tsx": "frontend/src/App.tsx"
+  },
+  "files_verified": [
+    "frontend/package.json",
+    "frontend/vite.config.ts",
+    "frontend/tsconfig.json",
+    "frontend/index.html",
+    "frontend/tailwind.config.ts",
+    "frontend/postcss.config.js",
+    "frontend/src/main.tsx",
+    "frontend/src/App.tsx",
+    "frontend/src/index.css",
+    "frontend/src/api-client/todos.ts",
+    "frontend/src/components/ui/Button.tsx",
+    "frontend/src/components/ui/Input.tsx",
+    "frontend/src/components/ui/Card.tsx",
+    "frontend/src/components/ui/Checkbox.tsx",
+    "frontend/src/components/ui/Badge.tsx",
+    "frontend/src/components/ui/ThemeToggle.tsx",
+    "frontend/src/components/layout/AppShell.tsx",
+    "frontend/src/components/features/TodoForm.tsx",
+    "frontend/src/components/features/TodoItem.tsx",
+    "frontend/src/components/features/TodoList.tsx",
+    "frontend/src/pages/TodoPage.tsx",
+    "frontend/src/hooks/useTheme.ts",
+    "frontend/src/utils/cn.ts"
+  ],
+  "contract_alignment": {
+    "get": "GET /api/todos returns a bare JSON array",
+    "post": "POST /api/todos sends { text }",
+    "patch": "PATCH /api/todos/{id} sends { text?: string, completed?: boolean }",
+    "delete": "DELETE /api/todos/{id} expects 204 no body",
+    "api_base": "import.meta.env.VITE_API_BASE_URL ?? ''"
+  },
+  "features": [
+    "create todo",
+    "view todos",
+    "edit todo",
+    "toggle completed state",
+    "delete todo",
+    "loading state",
+    "error state",
+    "empty state",
+    "dark/light theme toggle"
+  ],
+  "notes": [
+    "Updated api-client types to include created_at and updated_at.",
+    "Improved backend connectivity error messaging for browser request or proxy failures.",
+    "Refresh flow now surfaces failures instead of failing silently."
+  ]
+}
