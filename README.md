@@ -5,6 +5,10 @@ This monorepo contains:
 - `backend/` — FastAPI backend exposing CRUD endpoints for todos (PostgreSQL via `DATABASE_URL`).
 - `frontend/` — React + Vite frontend for creating, editing, toggling, and deleting todos.
 
+This app uses:
+- **Backend**: FastAPI + SQLAlchemy (PostgreSQL)
+- **Frontend**: React + Vite + Vitest/React Testing Library
+
 ## Repository structure
 
 ```text
@@ -52,7 +56,7 @@ If you don’t set it, the frontend uses its default configuration.
 
 ## Quick start (local)
 
-### 1) Start the backend
+### 1) Start the backend (FastAPI)
 
 ```bash
 cd backend
@@ -68,25 +72,25 @@ uvicorn main:app --reload --port 8000
 
 The backend creates the `todos` table automatically on startup.
 
-### 2) Start the frontend
+### 2) Start the frontend (React)
 
 ```bash
 cd frontend
 npm ci
 
-# optional
+# optional (frontend default is configured inside the app)
 export VITE_API_BASE_URL=http://localhost:8000
 
 npm run dev
 ```
 
-Then open the URL shown by Vite.
+Open the URL printed by Vite.
 
 ## API summary
 
 Base path: `/api/todos`.
 
-**Todo fields**: `id`, `text`, `completed`, `created_at`.
+**Todo fields**: `id`, `title`, `completed`.
 
 ### GET /api/todos
 
@@ -100,9 +104,8 @@ Returns a list of todos.
 [
   {
     "id": 1,
-    "text": "string",
-    "completed": false,
-    "created_at": "2026-01-01T00:00:00Z"
+    "title": "Buy milk",
+    "completed": false
   }
 ]
 ```
@@ -116,7 +119,7 @@ Creates a new todo.
 **Request body**
 
 ```json
-{ "text": "Buy milk" }
+{ "title": "Buy milk" }
 ```
 
 **Response** `201 Created`
@@ -124,25 +127,24 @@ Creates a new todo.
 ```json
 {
   "id": 1,
-  "text": "Buy milk",
-  "completed": false,
-  "created_at": "2026-01-01T00:00:00Z"
+  "title": "Buy milk",
+  "completed": false
 }
 ```
 
 **Errors**
-- `422 Unprocessable Entity` — invalid request body (e.g., empty `text`)
+- `422 Unprocessable Entity` — invalid request body (e.g., empty/invalid `title`)
 
 ### PATCH /api/todos/{id}
 
-Updates an existing todo. At least one of `text` or `completed` must be provided.
+Updates an existing todo. At least one of `title` or `completed` must be provided.
 
 - **Auth**: none (public)
 
 **Request body**
 
 ```json
-{ "text": "Buy oat milk" }
+{ "title": "Buy oat milk" }
 ```
 
 or
@@ -156,9 +158,8 @@ or
 ```json
 {
   "id": 1,
-  "text": "Buy oat milk",
-  "completed": true,
-  "created_at": "2026-01-01T00:00:00Z"
+  "title": "Buy oat milk",
+  "completed": true
 }
 ```
 
