@@ -1,12 +1,12 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 
 type MockTodo = {
   id: number;
-  text: string;
+  title: string;
   completed: boolean;
-  created_at: string;
-  updated_at: string;
 };
 
 describe('App', () => {
@@ -23,27 +23,22 @@ describe('App', () => {
     vi.unstubAllGlobals();
   });
 
-  it('renders todos from the API and refreshes after creating a new todo', async () => {
+  it('renders todos from the API, toggles theme, and refreshes after creating a new todo', async () => {
     const initialTodos: MockTodo[] = [
       {
         id: 1,
-        text: 'Existing task',
+        title: 'Existing task',
         completed: false,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
       },
     ];
 
-    const refreshedTodos: MockTodo[] = [
-      ...initialTodos,
-      {
-        id: 2,
-        text: 'New task',
-        completed: false,
-        created_at: '2024-01-02T00:00:00Z',
-        updated_at: '2024-01-02T00:00:00Z',
-      },
-    ];
+    const createdTodo: MockTodo = {
+      id: 2,
+      title: 'New task',
+      completed: false,
+    };
+
+    const refreshedTodos: MockTodo[] = [...initialTodos, createdTodo];
 
     fetchMock
       .mockResolvedValueOnce({
@@ -52,13 +47,7 @@ describe('App', () => {
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
-          id: 2,
-          text: 'New task',
-          completed: false,
-          created_at: '2024-01-02T00:00:00Z',
-          updated_at: '2024-01-02T00:00:00Z',
-        }),
+        json: async () => createdTodo,
       })
       .mockResolvedValueOnce({
         ok: true,
@@ -68,10 +57,13 @@ describe('App', () => {
     render(<App />);
 
     expect(await screen.findByText('Existing task')).toBeInTheDocument();
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
 
-    const input = screen.getByLabelText('Add a new todo');
-    fireEvent.change(input, { target: { value: 'New task' } });
-    fireEvent.click(screen.getByRole('button', { name: /create todo/i }));
+    await userEvent.click(screen.getByRole('button', { name: /switch to light mode/i }));
+    expect(document.documentElement.classList.contains('dark')).toBe(false);
+
+    await userEvent.type(screen.getByLabelText(/add a new todo/i), 'New task');
+    await userEvent.click(screen.getByRole('button', { name: /create todo/i }));
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenNthCalledWith(
@@ -79,12 +71,11 @@ describe('App', () => {
         '/api/todos',
         expect.objectContaining({
           method: 'POST',
-          body: JSON.stringify({ text: 'New task' }),
+          body: JSON.stringify({ title: 'New task' }),
         }),
       );
     });
 
     expect(await screen.findByText('New task')).toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 });

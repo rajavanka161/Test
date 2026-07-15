@@ -43,11 +43,11 @@ export function TodoPage() {
     }
   }
 
-  async function handleCreate(text: string) {
+  async function handleCreate(title: string) {
     setIsSubmitting(true);
     setError(null);
     try {
-      await createTodo(text);
+      await createTodo(title);
       await refreshTodos();
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : 'Unable to create todo.');
@@ -57,12 +57,12 @@ export function TodoPage() {
     }
   }
 
-  async function handleUpdate(todo: Todo, nextText: string, nextCompleted: boolean) {
+  async function handleUpdate(todo: Todo, nextTitle: string, nextCompleted: boolean) {
     setPendingUpdateId(todo.id);
     setError(null);
     try {
       await updateTodo(todo.id, {
-        text: nextText,
+        title: nextTitle,
         completed: nextCompleted,
       });
       await refreshTodos();

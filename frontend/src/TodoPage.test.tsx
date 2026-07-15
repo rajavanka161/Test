@@ -5,10 +5,8 @@ import TodoPage from './pages/TodoPage';
 
 type ApiTodo = {
   id: number;
-  text: string;
+  title: string;
   completed: boolean;
-  created_at: string;
-  updated_at: string;
 };
 
 describe('TodoPage', () => {
@@ -23,19 +21,15 @@ describe('TodoPage', () => {
     fetchMock.mockReset();
   });
 
-  // AC-1: The frontend allows a user to create a todo item and see it appear in the todo list.
   it('creates and renders a todo from the API response', async () => {
-    const todos: ApiTodo[] = [];
     const created: ApiTodo = {
       id: 1,
-      text: 'Learn testing',
+      title: 'Learn testing',
       completed: false,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z',
     };
 
     fetchMock
-      .mockResolvedValueOnce({ ok: true, json: async () => todos })
+      .mockResolvedValueOnce({ ok: true, json: async () => [] })
       .mockResolvedValueOnce({ ok: true, json: async () => created })
       .mockResolvedValueOnce({ ok: true, json: async () => [created] });
 
@@ -45,19 +39,22 @@ describe('TodoPage', () => {
     await userEvent.click(screen.getByRole('button', { name: /create todo/i }));
 
     expect(await screen.findByText('Learn testing')).toBeVisible();
-    expect(fetchMock).toHaveBeenCalledWith('/api/todos', expect.objectContaining({ method: 'POST' }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/todos',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ title: 'Learn testing' }),
+      }),
+    );
   });
 
-  // AC-2: The frontend allows a user to mark an existing todo item as completed or not completed.
   it('toggles completion by sending the completed field to the API', async () => {
     const todo: ApiTodo = {
       id: 1,
-      text: 'Toggle me',
+      title: 'Toggle me',
       completed: false,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z',
     };
-    const toggled: ApiTodo = { ...todo, completed: true, updated_at: '2024-01-01T00:01:00Z' };
+    const toggled: ApiTodo = { ...todo, completed: true };
 
     fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => [todo] })
@@ -69,21 +66,25 @@ describe('TodoPage', () => {
     await userEvent.click(await screen.findByRole('checkbox', { name: /toggle me/i }));
 
     await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledWith('/api/todos/1', expect.objectContaining({ method: 'PATCH' }));
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/todos/1',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: JSON.stringify({ title: 'Toggle me', completed: true }),
+        }),
+      );
     });
+
     expect(screen.getByRole('checkbox', { name: /toggle me/i })).toBeChecked();
   });
 
-  // AC-3: The frontend allows a user to edit an existing todo item's content.
-  it('edits an existing todo and sends the updated text to the API', async () => {
+  it('edits an existing todo and sends the updated title to the API', async () => {
     const todo: ApiTodo = {
       id: 1,
-      text: 'Original',
+      title: 'Original',
       completed: false,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z',
     };
-    const updated: ApiTodo = { ...todo, text: 'Updated' };
+    const updated: ApiTodo = { ...todo, title: 'Updated' };
 
     fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => [todo] })
@@ -99,22 +100,25 @@ describe('TodoPage', () => {
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
     expect(await screen.findByText('Updated')).toBeVisible();
-    expect(fetchMock).toHaveBeenCalledWith('/api/todos/1', expect.objectContaining({ method: 'PATCH' }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/todos/1',
+      expect.objectContaining({
+        method: 'PATCH',
+        body: JSON.stringify({ title: 'Updated', completed: false }),
+      }),
+    );
   });
 
-  // AC-4: The frontend allows a user to delete an existing todo item from the list.
   it('deletes a todo after confirming the delete flow', async () => {
     const todo: ApiTodo = {
       id: 1,
-      text: 'Remove me',
+      title: 'Remove me',
       completed: false,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z',
     };
 
     fetchMock
       .mockResolvedValueOnce({ ok: true, json: async () => [todo] })
-      .mockResolvedValueOnce({ ok: true, status: 204, json: async () => undefined })
+      .mockResolvedValueOnce({ ok: true, status: 204, text: async () => '' })
       .mockResolvedValueOnce({ ok: true, json: async () => [] });
 
     render(<TodoPage />);
@@ -122,7 +126,22 @@ describe('TodoPage', () => {
     await userEvent.click(await screen.findByRole('button', { name: /delete remove me/i }));
     await userEvent.click(screen.getByRole('button', { name: /confirm delete/i }));
 
-    expect(screen.queryByText('Remove me')).not.toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledWith('/api/todos/1', expect.objectContaining({ method: 'DELETE' }));
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith('/api/todos/1', expect.objectContaining({ method: 'DELETE' }));
+    });
+    expect(await screen.findByText(/no todos yet/i)).toBeVisible();
+  });
+
+  it('shows an error state when loading fails and retries on demand', async () => {
+    fetchMock
+      .mockResolvedValueOnce({ ok: false, status: 500, text: async () => 'Backend unavailable' })
+      .mockResolvedValueOnce({ ok: true, json: async () => [] });
+
+    render(<TodoPage />);
+
+    expect(await screen.findByText(/unable to load todos/i)).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: /try again/i }));
+
+    expect(await screen.findByText(/no todos yet/i)).toBeVisible();
   });
 });

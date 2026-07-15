@@ -5,22 +5,22 @@ import { Input } from '../ui/Input';
 import { Label } from '../ui/Label';
 
 interface TodoFormProps {
-  onSubmit: (text: string) => Promise<void>;
+  onSubmit: (title: string) => Promise<void>;
   isSubmitting: boolean;
 }
 
 export function TodoForm({ onSubmit, isSubmitting }: TodoFormProps) {
-  const [text, setText] = useState('');
+  const [title, setTitle] = useState('');
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const trimmed = text.trim();
+    const trimmed = title.trim();
     if (!trimmed) {
       return;
     }
 
     await onSubmit(trimmed);
-    setText('');
+    setTitle('');
   }
 
   return (
@@ -31,8 +31,8 @@ export function TodoForm({ onSubmit, isSubmitting }: TodoFormProps) {
         </Label>
         <Input
           id="todo-text"
-          value={text}
-          onChange={(event) => setText(event.target.value)}
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
           placeholder="Write your next task..."
           aria-required="true"
           required
@@ -40,7 +40,7 @@ export function TodoForm({ onSubmit, isSubmitting }: TodoFormProps) {
         />
       </div>
       <div className="flex items-end">
-        <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting || text.trim().length === 0}>
+        <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting || title.trim().length === 0}>
           {isSubmitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           Create todo
         </Button>

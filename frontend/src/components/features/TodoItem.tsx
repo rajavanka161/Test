@@ -11,25 +11,25 @@ interface TodoItemProps {
   todo: Todo;
   isUpdating: boolean;
   isDeleting: boolean;
-  onUpdate: (todo: Todo, nextText: string, nextCompleted: boolean) => Promise<void>;
+  onUpdate: (todo: Todo, nextTitle: string, nextCompleted: boolean) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
 }
 
 export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
-  const [draftText, setDraftText] = useState(todo.text);
+  const [draftTitle, setDraftTitle] = useState(todo.title);
 
   useEffect(() => {
-    setDraftText(todo.text);
-  }, [todo.text]);
+    setDraftTitle(todo.title);
+  }, [todo.title]);
 
   async function handleToggle() {
-    await onUpdate(todo, todo.text, !todo.completed);
+    await onUpdate(todo, todo.title, !todo.completed);
   }
 
   async function handleSave() {
-    const trimmed = draftText.trim();
+    const trimmed = draftTitle.trim();
     if (!trimmed) {
       return;
     }
@@ -51,7 +51,7 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
   }
 
   function handleCancel() {
-    setDraftText(todo.text);
+    setDraftTitle(todo.title);
     setIsEditing(false);
   }
 
@@ -69,7 +69,7 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
             checked={todo.completed}
             onChange={() => void handleToggle()}
             disabled={isUpdating || isDeleting}
-            aria-label={`Mark ${todo.text} as ${todo.completed ? 'incomplete' : 'complete'}`}
+            aria-label={`Mark ${todo.title} as ${todo.completed ? 'incomplete' : 'complete'}`}
           />
         </label>
         <div className="flex-1 space-y-3">
@@ -93,8 +93,8 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
                 </Label>
                 <Input
                   id={`todo-edit-${todo.id}`}
-                  value={draftText}
-                  onChange={(event) => setDraftText(event.target.value)}
+                  value={draftTitle}
+                  onChange={(event) => setDraftTitle(event.target.value)}
                   onKeyDown={(event) => void handleEditKeyDown(event)}
                   disabled={isUpdating || isDeleting}
                   aria-required="true"
@@ -103,7 +103,7 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
                 />
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" onClick={() => void handleSave()} disabled={isUpdating || isDeleting || draftText.trim().length === 0}>
+                <Button size="sm" onClick={() => void handleSave()} disabled={isUpdating || isDeleting || draftTitle.trim().length === 0}>
                   <Save className="h-4 w-4" />
                   Save
                 </Button>
@@ -115,7 +115,7 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
             </div>
           ) : (
             <p className={`text-base font-medium ${todo.completed ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
-              {todo.text}
+              {todo.title}
             </p>
           )}
         </div>
@@ -125,7 +125,7 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
           <Button
             variant="ghost"
             size="icon"
-            aria-label={`Edit ${todo.text}`}
+            aria-label={`Edit ${todo.title}`}
             disabled={isDeleting || isUpdating}
             onClick={() => setIsEditing(true)}
             className="text-muted-foreground"
@@ -153,7 +153,7 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
           <Button
             variant="ghost"
             size="icon"
-            aria-label={`Delete ${todo.text}`}
+            aria-label={`Delete ${todo.title}`}
             disabled={isDeleting || isUpdating}
             onClick={() => setIsConfirmingDelete(true)}
             className="text-muted-foreground hover:text-destructive"

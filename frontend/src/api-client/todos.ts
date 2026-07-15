@@ -1,13 +1,11 @@
 export type Todo = {
   id: number;
-  text: string;
+  title: string;
   completed: boolean;
-  created_at: string;
-  updated_at: string;
 };
 
 export type TodoUpdate = {
-  text?: string;
+  title?: string;
   completed?: boolean;
 };
 
@@ -60,10 +58,10 @@ export function fetchTodos(): Promise<Todo[]> {
   return request<Todo[]>('/api/todos');
 }
 
-export function createTodo(text: string): Promise<Todo> {
+export function createTodo(title: string): Promise<Todo> {
   return request<Todo>('/api/todos', {
     method: 'POST',
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ title }),
   });
 }
 
