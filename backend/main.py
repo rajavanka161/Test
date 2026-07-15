@@ -8,13 +8,13 @@ from app.routers import todos
 
 # API CONTRACT
 # GET  /api/todos
-#   response: [{"id": number, "text": string, "completed": boolean, "created_at": string, "updated_at": string}]
+#   response: [{"id": number, "title": string, "completed": boolean}]
 # POST /api/todos
-#   request:  {"text": string}
-#   response: {"id": number, "text": string, "completed": boolean, "created_at": string, "updated_at": string}
+#   request:  {"title": string}
+#   response: {"id": number, "title": string, "completed": boolean}
 # PATCH /api/todos/{id}
-#   request:  {"text"?: string, "completed"?: boolean}
-#   response: {"id": number, "text": string, "completed": boolean, "created_at": string, "updated_at": string}
+#   request:  {"title"?: string, "completed"?: boolean}
+#   response: {"id": number, "title": string, "completed": boolean}
 # DELETE /api/todos/{id}
 #   response: 204 no body
 
@@ -34,5 +34,3 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(todos.router)
-
-
