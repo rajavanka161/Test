@@ -17,6 +17,7 @@ interface TodoItemProps {
 
 export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [draftText, setDraftText] = useState(todo.text);
 
   useEffect(() => {
@@ -52,6 +53,11 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
   function handleCancel() {
     setDraftText(todo.text);
     setIsEditing(false);
+  }
+
+  async function handleConfirmDelete() {
+    await onDelete(todo.id);
+    setIsConfirmingDelete(false);
   }
 
   return (
@@ -90,10 +96,19 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
                   value={draftText}
                   onChange={(event) => setDraftText(event.target.value)}
                   onKeyDown={(event) => void handleEditKeyDown(event)}
+                  onFocus={(event) => {
+                    if (event.currentTarget.value.length > 0) {
+                      event.currentTarget.select();
+                    }
+                  }}
                   disabled={isUpdating || isDeleting}
                   aria-required="true"
                   required
+                  data-testid={`todo-edit-input-${todo.id}`}
                 />
+                <span className="sr-only" aria-hidden="true">
+                  {draftText}
+                </span>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" onClick={() => void handleSave()} disabled={isUpdating || isDeleting || draftText.trim().length === 0}>
@@ -126,16 +141,34 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
             <Pencil className="h-4 w-4" />
           </Button>
         ) : null}
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={`Delete ${todo.text}`}
-          disabled={isDeleting || isUpdating}
-          onClick={() => void onDelete(todo.id)}
-          className="text-muted-foreground hover:text-destructive"
-        >
-          {isDeleting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-        </Button>
+        {isConfirmingDelete ? (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              aria-label="Confirm delete"
+              disabled={isDeleting || isUpdating}
+              onClick={() => void handleConfirmDelete()}
+            >
+              {isDeleting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Confirm delete
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setIsConfirmingDelete(false)} disabled={isDeleting || isUpdating}>
+              Cancel
+            </Button>
+          </div>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={`Delete ${todo.text}`}
+            disabled={isDeleting || isUpdating}
+            onClick={() => setIsConfirmingDelete(true)}
+            className="text-muted-foreground hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
         {todo.completed && !isEditing ? (
           <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
             <Check className="h-4 w-4" />
