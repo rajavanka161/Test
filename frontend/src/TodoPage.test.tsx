@@ -93,8 +93,9 @@ describe('TodoPage', () => {
     render(<TodoPage />);
 
     await userEvent.click(await screen.findByRole('button', { name: /edit original/i }));
-    await userEvent.clear(screen.getByDisplayValue('Original'));
-    await userEvent.type(screen.getByDisplayValue('Updated'), 'Updated');
+    const editInput = screen.getByDisplayValue('Original');
+    await userEvent.clear(editInput);
+    await userEvent.type(editInput, 'Updated');
     await userEvent.click(screen.getByRole('button', { name: /save/i }));
 
     expect(await screen.findByText('Updated')).toBeVisible();

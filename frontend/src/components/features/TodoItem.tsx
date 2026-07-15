@@ -96,19 +96,11 @@ export function TodoItem({ todo, isUpdating, isDeleting, onUpdate, onDelete }: T
                   value={draftText}
                   onChange={(event) => setDraftText(event.target.value)}
                   onKeyDown={(event) => void handleEditKeyDown(event)}
-                  onFocus={(event) => {
-                    if (event.currentTarget.value.length > 0) {
-                      event.currentTarget.select();
-                    }
-                  }}
                   disabled={isUpdating || isDeleting}
                   aria-required="true"
                   required
                   data-testid={`todo-edit-input-${todo.id}`}
                 />
-                <span className="sr-only" aria-hidden="true">
-                  {draftText}
-                </span>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" onClick={() => void handleSave()} disabled={isUpdating || isDeleting || draftText.trim().length === 0}>
